@@ -10,15 +10,15 @@ numberfy = (val) ->
   if isNaN(val)
     # check for negative signs or parenthases.
     is_negative = if (val.match("-") || val.match(/\(.*\)/)) then -1 else 1
-    # remove any commas
-    val = val.replace(/,/g, "")
+    # replace commas with dot
+    val = val.replace(/,/g, ".")
     # return just the number and make it negative if needed.
     +(val.match(/\d+.?\d*/)[0]) * is_negative
   else
     val
 
 # Uses moment.js to parse and format the date into the correct format
-parseDate = (val) -> moment(val).format('MM/DD/YYYY') if val && val.length > 0
+parseDate = (val) -> moment(val,'DD/MM/YYYY').format('DD/MM/YYYY') if val && val.length > 0
 
 
 # This class does all the heavy lifting.
@@ -78,10 +78,10 @@ class window.DataObject
   converted_csv: (limit, lookup) ->
     return nil if @base_json == null
     # Papa.unparse string
-    string = ynab_cols.join(',') + "\n"
+    string = '\"' + ynab_cols.join('\",\"') + "\"\n"
     @.converted_json(limit, lookup).forEach (row) ->
       row_values = []
       ynab_cols.forEach (col) ->
         row_values.push row[col]
-      string += row_values.join(',') + "\n"
+      string += '\"' + row_values.join('\",\"') + "\"\n"
     string
